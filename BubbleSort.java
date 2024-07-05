@@ -17,6 +17,19 @@ public class BubbleSort {
         }
     }
 
+    public ModelChat createChat(Map<String, String> inputs, int agentId) {
+        ModelChat modelChat = new ModelChat();
+        modelChat.setAgentId(agentId);
+        modelChat.setType(1);
+        modelChat.setRequest(jsonMapper.toJson(inputs));
+        modelChatMapper.insert(modelChat);
+        ModelCallerDTO modelCallerDTO = new ModelCallerDTO();
+        modelCallerDTO.setAgentId(agentId);
+        modelCallerDTO.setChatId(modelChat.getId());
+        mqSender.sendWithTags("model_caller", "codeReview", modelCallerDTO, modelCallerDTO.getChatId());
+        return modelChat;
+    }
+    
     public static void main(String[] args) {
         int[] arr = {6, 3, 8, 2, 9, 1};
         System.out.println("排序前的数组为：");
@@ -27,3 +40,6 @@ public class BubbleSort {
         System.out.println("\n 排序后的数组为：");
         for (int num : arr) {
             System.out.print(num + " ");
+        }
+    }
+}
